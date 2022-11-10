@@ -17,8 +17,8 @@ function create_docker()
         -v /usr/lib/x86_64-linux-gnu/libnvcuvid.so.470.141.03:/usr/lib/x86_64-linux-gnu/libnvcuvid.so.470.141.03 \
         -v /usr/lib/x86_64-linux-gnu/libnvcuvid.so.1:/usr/lib/x86_64-linux-gnu/libnvcuvid.so.1  \
         -v /usr/lib/x86_64-linux-gnu/libnvcuvid.so:/usr/lib/x86_64-linux-gnu/libnvcuvid.so \
-        -v /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.470.141.03:/usr/lib/x86_64-linux-gnu/libnvidia-encode.so.470.141.03 -\
-        v /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1:/usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1  \
+        -v /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.470.141.03:/usr/lib/x86_64-linux-gnu/libnvidia-encode.so.470.141.03 \
+        -v /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1:/usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1  \
         -v /usr/lib/x86_64-linux-gnu/libnvidia-encode.so:/usr/lib/x86_64-linux-gnu/libnvidia-encode.so \
         $2 bash"
 
