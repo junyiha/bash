@@ -1,16 +1,14 @@
 #! /bin/bash +x
 
-function ffserver()
+# 模拟rtsp流
+function StartFFServer()
 {
     cd /home/user/Videos/
     nohup ffserver -f ffserver.conf &
 }
 
-function redshift()
+# 护眼软件，降低电脑亮度
+function StartRedshift()
 {
     nohup redshift &
 }
-
-# ffserver
-
-redshift
