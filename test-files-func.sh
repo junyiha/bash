@@ -1,5 +1,54 @@
 #! /bin/bash +x
 
+# 找到当前执行程序的绝对路径
+function FindPath()
+{
+    realpath .
+}
+
+function MakeRobotProject()
+{
+    if [ -d "build" ]; then 
+        echo "Delete build folder..."
+        rm -r build
+    fi
+
+    echo "create build folder..."
+    mkdir build
+    cd build
+    echo "cd build folder and compile..."
+    cmake .. && make -j9
+}
+
+function PackageRobot()
+{
+    # 设置打包的根路径
+    root_path="robot"
+    # 执行路径在 build/
+    echo "create ${root_path} folder..."
+    mkdir ${root_path}
+
+    echo "make bin folder..."
+    cp -r examples ${root_path}/bin
+
+    echo "make lib folder..."
+    mkdir ${root_path}/lib
+    find ./lib -name '*.so' | xargs -i cp {} ${root_path}/lib
+
+    echo "cp third_party and webroot"
+    cp -r ../third_party ${root_path}/
+    cp -r ../modules/webroot ${root_path}/
+
+    echo "cp script"
+    cp -r ../script ${root_path}/
+    cp ../*.sh ${root_path}
+
+    echo "create tar file"
+    tar -zcf ${root_path}.tar.gz ${root_path}
+
+    echo "${root_path} folder create done..."
+}
+
 function FindBashFile()
 {
     for filename in $(find . -name '*.sh')
@@ -23,7 +72,7 @@ function FindSharedLibFile()
 {
     for filename in $(find . -name '*.so')
     do
-        cp filename ./lib
+        cp ${filename} ./lib
     done 
 
     return 0;
@@ -114,3 +163,24 @@ function ZipBITMAINLAND()
 
     mv *.zip ./zip_files/
 }
+
+function Help()
+{
+    echo "-p, --path  find realpath"
+    echo "-h, --help"
+}
+
+function main()
+{
+    if [[ $1 == "--path" || $1 == "-p" ]]; then 
+        FindPath
+    elif [[ $1 = "--help" || $1 = "-h" ]]; then 
+        echo "help"
+    fi
+}
+
+if [[ $# > 0 ]]; then 
+    main $*
+else 
+    echo "Too few arguments..."
+fi

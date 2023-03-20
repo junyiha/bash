@@ -12,3 +12,9 @@ function StartRedshift()
 {
     nohup redshift &
 }
+
+# 以root用户打开VSCode
+function VsCode()
+{
+    alias code='/usr/share/code/code . --no-sandbox --unity-lanuch'
+}
