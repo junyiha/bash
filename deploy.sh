@@ -73,7 +73,7 @@ function MakeDockerImportImage()
     if [[ -z $1 ]]; then 
         echo "Error: empty image name..."
     else 
-        tar -zcvf $1 --exclude=/sys --exclude=/system --exclude=/proc --exclude=$1 /
+        tar -cvf $1 --exclude=/sys --exclude=/system --exclude=/proc --exclude=$1 /
     fi
 }
 
