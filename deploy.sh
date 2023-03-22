@@ -27,3 +27,76 @@ function StartDockerVCA
     echo $CMD
     eval $CMD
 }
+
+function Clear()
+{
+    vca_program="/data/dagger/VideoProcess/bin/makelicence.exe"
+    log_vca="/tmp/videoprocess.log/s1.log"
+    log_supervisor="/data/dagger/logs/supervisor/supervisord_control_err.log"
+    log_web_backend="/data/dagger/logs/web_backend/uwsgi.log"
+    static_images="/data/dagger/static/platform/images/event"
+    static_excel="/data/dagger/static/platform/excel/record_warning"
+
+    if [[ -e ${vca_program} ]]; then 
+        rm ${vca_program}
+    fi
+
+    if [[ -e ${log_vca} ]]; then
+        rm -rf "/tmp/videoprocess.log/*"
+    fi
+
+    if [[ -e ${log_supervisor} ]]; then
+        rm -rf "/data/dagger/logs/supervisor/*"
+    fi
+
+    if [[ -e ${log_web_backend} ]]; then
+        rm -rf "/data/dagger/logs/web_backend/*" 
+    fi
+
+    if [[ -e ${static_images} ]]; then 
+        rm -rf "/data/dagger/static/platform/images/*"
+    fi
+
+    if [[ -e ${static_excel} ]]; then
+        rm -rf "/data/dagger/static/platform/excel/*"
+    fi
+}
+
+function MakeDockerImportImage()
+{
+    if [[ -z $1 ]]; then 
+        echo "Error: empty image name..."
+    else 
+        tar -zcvf $1 --exclude=/sys --exclude=/system --exclude=/proc --exclude=$1 /
+    fi
+}
+
+function Help()
+{
+    echo "Usage: ./deploy.sh [-h]"
+    echo "shell script for deploy vca project..."
+    echo -e 
+    echo "  -c, --clear  clear redundant files"
+    echo "  -m, --make-docker-image  make docker image which is used in docker import"
+    echo "  -s, --start-docker  create container from a docker image"
+}
+
+function main()
+{
+    if [[ $1 == "-c" || $1 == "--clear" ]]; then 
+        Clear
+    elif [[ $1 == "-m" || $1 == "--make-docker-image" ]]; then 
+        MakeDockerImportImage $2
+    elif [[ $1 == "-s" || $1 == "--start-docker" ]]; then 
+        StartDockerVCA $2 $3 $4
+    elif [[ $1 == "-h" || $1 == "--help" ]]; then 
+        Help
+    fi
+}
+
+if [[ $# > 0 ]]; then 
+    main $*
+else
+    echo "Too few arguments..."
+    echo "Try './deploy.sh -h' for more information..."
+fi

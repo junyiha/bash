@@ -131,43 +131,30 @@ function FaceICETest()
     done
 }
 
-function ZipNVIDIA()
+# 传入工作路径，将该路径下的所有目录压缩为zip文件
+function CompressFilesInZip()
 {
-    rm zip_files/*
-
-    zip -r Fire_NVIDIA-GeForce-RTX-2080-x86_64.zip Fire_NVIDIA-GeForce-RTX-2080-x86_64
-
-    zip -r FullyBody_Face-HeadShoulder_NVIDIA-GeForce-RTX-2080-x86_64.zip FullyBody_Face-HeadShoulder_NVIDIA-GeForce-RTX-2080-x86_64
-
-    zip -r VEHICLE.zip VEHICLE
-
-    mv *.zip zip_files/
-}
-
-function ZipBITMAINLAND()
-{
-    rm zip_files/*
-
-    files=(Bike_Moto_Car_BITMAINLAND  Fire_BITMAINLAND FullyBody_Face-HeadShoulder_BITMAINLAND FullyBody_Guard-Helmet-Reflect-Phone_BITMAINLAND  JiaQiZhan_10class_BITMAINLAND Face_BITMAINLAND Foreign_BITMAINLAND  FullyBody_Falled_BITMAINLAND FullyBody_Mask-Face-Phone-Smoking_BITMAINLAND Moto_BITMAINLAND Vehicle_BITMAINLAND)
-
-    length=${#files[@]}
-    echo $length
-    i=0
-
-    while [ $i -le $length ]
-    do
-        echo ${files[$i]}.zip
-        zip -r ${files[$i]}.zip ${files[$i]}
-        ((i++))
-    done
-
-    mv *.zip ./zip_files/
+    if [[ -z $1 ]]; then 
+        echo "empty argument..."
+    else
+        echo "path : $1"
+        files=$(ls $1)
+        for i in ${files}
+        do 
+            if [ -d $i ]; then 
+                zip -r ${i}.zip $i
+            fi
+        done
+    fi
 }
 
 function Help()
 {
-    echo "-p, --path  find realpath"
-    echo "-h, --help"
+    echo "Usage: ./test-files-func.sh [-h]"
+    echo "demo script for testing..."
+    echo -e
+    echo "  -p, --path  find realpath"
+    echo "  -h, --help"
 }
 
 function main()
@@ -175,12 +162,17 @@ function main()
     if [[ $1 == "--path" || $1 == "-p" ]]; then 
         FindPath
     elif [[ $1 = "--help" || $1 = "-h" ]]; then 
-        echo "help"
+        Help
     fi
 }
+
+if [ $1 == "-p" ]; then 
+    echo "$1 -eq -p"
+fi
 
 if [[ $# > 0 ]]; then 
     main $*
 else 
     echo "Too few arguments..."
+    echo "Try './test-files-func.sh -h' for more information..."
 fi

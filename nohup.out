@@ -1,0 +1,8 @@
+Trying location provider `geoclue2'...
+Using provider `geoclue2'.
+Unable to start GeoClue client: GDBus.Error:org.freedesktop.DBus.Error.AccessDenied: Geolocation disabled for UID 1000.
+Unable to connect to GeoClue.
+Unable to get location from provider.
+Trying location provider `geoclue2'...
+Using provider `geoclue2'.
+Using method `randr'.
