@@ -30,6 +30,7 @@ function StartDockerVCA
 
 function Clear()
 {
+    echo "clear redundant files..."
     vca_program="/data/dagger/VideoProcess/bin/makelicence.exe"
     log_vca="/tmp/videoprocess.log/s1.log"
     log_supervisor="/data/dagger/logs/supervisor/supervisord_control_err.log"
@@ -42,23 +43,28 @@ function Clear()
     fi
 
     if [[ -e ${log_vca} ]]; then
-        rm -rf "/tmp/videoprocess.log/*"
+        echo "clearing /tmp/videoprocess.log/*"
+        rm -rf /tmp/videoprocess.log/*
     fi
 
     if [[ -e ${log_supervisor} ]]; then
-        rm -rf "/data/dagger/logs/supervisor/*"
+        echo "clearing /data/dagger/logs/supervisor/*"
+        rm -rf /data/dagger/logs/supervisor/*
     fi
 
     if [[ -e ${log_web_backend} ]]; then
-        rm -rf "/data/dagger/logs/web_backend/*" 
+        echo "clearing /data/dagger/logs/web_backend/*" 
+        rm -rf /data/dagger/logs/web_backend/*
     fi
 
-    if [[ -e ${static_images} ]]; then 
-        rm -rf "/data/dagger/static/platform/images/*"
+    if [[ -e ${static_images} ]]; then
+        echo  "clearing /data/dagger/static/platform/images/*"
+        rm -rf /data/dagger/static/platform/images/*
     fi
 
     if [[ -e ${static_excel} ]]; then
-        rm -rf "/data/dagger/static/platform/excel/*"
+        echo "clearing /data/dagger/static/platform/excel/*"
+        rm -rf /data/dagger/static/platform/excel/*
     fi
 }
 
