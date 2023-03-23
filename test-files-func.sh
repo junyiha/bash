@@ -6,6 +6,13 @@ function FindPath()
     realpath .
 }
 
+function ReCompileRobotProject()
+{
+    echo "cd build folder and compile..."
+    cd build
+    cmake .. && make -j9
+}
+
 function MakeRobotProject()
 {
     if [ -d "build" ]; then 

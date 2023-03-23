@@ -19,13 +19,34 @@ function VsCode()
     alias code='/usr/share/code/code . --no-sandbox --unity-lanuch'
 }
 
+# 查看内存信息
+# 条件判断，不能使用> < ，需要使用-lt -gt
+function WatchMemory()
+{
+    count=0
+    flag=9
+    while [ 1 ]
+    do
+        if [[ ${count} -gt ${flag} ]]; then
+            echo "break..." 
+            break
+        fi
+        date 
+        free -h 
+        echo -e
+        let count=${count}+3
+        sleep 3
+    done
+}
+
 function Help()
 {
-    echo "Usage: ./daemon-bash.sh [-h]"
+    echo "Usage: ./tools.sh [-h]"
     echo "demo script for daemon running..."
     echo -e
-    echo "  -r, --redshift  running redshift to protect eyes..."
     echo "  -h, --help"
+    echo "  -r, --redshift  running redshift to protect eyes..."
+    echo "  -w, --watch-memory  watch the memory information"
 }
 
 function main()
@@ -34,6 +55,8 @@ function main()
         StartRedshift
     elif [[ $1 == "-h" || $1 == "--help" ]]; then 
         Help
+    elif [[ $1 == "-w" || $1 == "--watch-memory" ]]; then 
+        WatchMemory
     fi
 }
 
@@ -41,5 +64,5 @@ if [[ $# > 0 ]]; then
     main $*
 else 
     echo "Too few arguments..."
-    echo "Try './daemon-bash.sh -h' for more information..."
+    echo "Try './tools.sh -h' for more information..."
 fi
