@@ -1,15 +1,50 @@
 #! /bin/bash +x
 
+function TestCopy()
+{
+    tmp_dir="/tmp/nvidia-encode-library"
+    if [[ -e ${tmp_dir} ]]; then 
+        rm -rf ${tmp_dir}
+    fi 
+
+    mkdir ${tmp_dir}
+    
+    cp /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.* ${tmp_dir} 
+    rm "${tmp_dir}/libnvidia-encode.so.1"
+    libnvidia_encode=$(ls ${tmp_dir})
+    echo ${libnvidia_encode}
+    cp /usr/lib/x86_64-linux-gnu/libnvcuvid.so.* ${tmp_dir}
+    rm "${tmp_dir}/libnvcuvid.so.1"
+    libnvcuvid=$(ls ${tmp_dir} | grep libnvcuvid.so)
+    echo ${libnvcuvid}
+}
+
 function StartDockerInNVIDIA()
 {
     docker run -itd --gpus all --privileged=true --restart=always --name $1 $2 /bin/bash
-    docker cp /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.525.60.11 $1:/usr/lib/x86_64-linux-gnu/
-    docker cp /usr/lib/x86_64-linux-gnu/libnvcuvid.so.525.60.11 $1:/usr/lib/x86_64-linux-gnu/
-    docker exec -it $1 /bin/bash -c 'ln -s /usr/lib/x86_64-linux-gnu/libnvcuvid.so.525.60.11 /usr/lib/x86_64-linux-gnu/libnvcuvid.so.1'
-    docker exec -it $1 /bin/bash -c 'ln -s /usr/lib/x86_64-linux-gnu/libnvcuvid.so.1 /usr/lib/x86_64-linux-gnu/libnvcuvid.so'
+    tmp_dir="/tmp/nvidia-encode-library"
+    if [[ -e ${tmp_dir} ]]; then 
+        rm -rf ${tmp_dir}
+    fi 
 
-    docker exec -it $1 /bin/bash -c 'ln -s /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.525.60.11 /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1'
-    docker exec -it $1 /bin/bash -c 'ln -s /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1 /usr/lib/x86_64-linux-gnu/libnvidia-encode.so'
+    mkdir ${tmp_dir}
+    
+    cp /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.* ${tmp_dir} 
+    rm "${tmp_dir}/libnvidia-encode.so.1"
+    libnvidia_encode=$(ls ${tmp_dir})
+    echo ${libnvidia_encode}
+    cp /usr/lib/x86_64-linux-gnu/libnvcuvid.so.* ${tmp_dir}
+    rm "${tmp_dir}/libnvcuvid.so.1"
+    libnvcuvid=$(ls ${tmp_dir} | grep libnvcuvid.so)
+    echo ${libnvcuvid}
+    
+    docker cp /usr/lib/x86_64-linux-gnu/${libnvidia_encode} $1:/usr/lib/x86_64-linux-gnu/
+    docker cp /usr/lib/x86_64-linux-gnu/${libnvcuvid} $1:/usr/lib/x86_64-linux-gnu/
+    docker exec -it $1 /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/${libnvcuvid} /usr/lib/x86_64-linux-gnu/libnvcuvid.so.1"
+    docker exec -it $1 /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libnvcuvid.so.1 /usr/lib/x86_64-linux-gnu/libnvcuvid.so"
+
+    docker exec -it $1 /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/${libnvidia_encode} /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1"
+    docker exec -it $1 /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1 /usr/lib/x86_64-linux-gnu/libnvidia-encode.so"
 }
 
 function TestVCA()
@@ -143,6 +178,8 @@ function main()
         TestVCA
     elif [[ $1 == "--start-docker-in-nvidia" ]]; then 
         StartDockerInNVIDIA $2 $3
+    elif [[ $1 == "--test" ]]; then 
+        TestCopy
     fi
 }
 
