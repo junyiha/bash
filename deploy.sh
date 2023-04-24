@@ -1,4 +1,4 @@
-#! /bin/bash +x
+#! /bin/bash -x
 
 function TestCopy()
 {
@@ -63,6 +63,8 @@ function TestVCA()
 # 从指定镜像启动一个容器 
 # 第一个参数 ： 容器名称
 # 第二个参数 ： 镜像
+# 3306 : mysql
+# 17007 : kms
 function StartDockerVCA
 {
     CMD="docker run \
@@ -73,6 +75,8 @@ function StartDockerVCA
         -p 8083:8083 \
         -p 8084:8084 \
         -p 15379:6379 \
+        -p 13306:3306 \
+        -p 17007:17007 \
         -v /system:/system \
         -v /etc/localtime:/etc/localtime:ro \
         -v /etc/timezone:/etc/timezone:ro \
@@ -110,6 +114,7 @@ function Clear()
     log_web_backend="/data/dagger/logs/web_backend/uwsgi.log"
     static_images="/data/dagger/static/platform/images/event"
     static_excel="/data/dagger/static/platform/excel/record_warning"
+    system_id="/data/dagger/SystemId"
 
     if [[ -e ${vca_program} ]]; then 
         rm ${vca_program}
@@ -138,6 +143,11 @@ function Clear()
     if [[ -e ${static_excel} ]]; then
         echo "clearing /data/dagger/static/platform/excel/*"
         rm -rf /data/dagger/static/platform/excel/*
+    fi
+
+    if [[ -e ${system_id} ]]; then 
+        echo "clearing ${system_id}"
+        rm -rf ${system_id}
     fi
 }
 

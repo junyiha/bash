@@ -15,3 +15,7 @@ delete from gh_t_task;
 delete from gh_t_warning_event;
 
 delete from gh_t_warning_record;
+
+delete from gh_t_gpu;
+
+delete from gh_t_server;

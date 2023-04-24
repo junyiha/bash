@@ -1,4 +1,4 @@
-#! /bin/bash +x
+#! /bin/bash -x
 
 # 模拟rtsp流
 function StartFFServer()

@@ -1,4 +1,26 @@
-#! /bin/bash +x
+#! /bin/bash -x
+
+function EtherCATStatus()
+{
+    while [[ true ]]
+    do
+        ethercat slv
+        sleep 1
+    done
+}
+
+function EtherCATPosition()
+{
+    while [[ true ]]
+    do 
+        for i in {0..5}
+        do 
+            ethercat upload $1 -p ${i} $2 00
+        done 
+        echo -e 
+        sleep 1
+    done 
+}
 
 # 找到当前执行程序的绝对路径
 function FindPath()
