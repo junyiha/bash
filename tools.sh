@@ -1,5 +1,20 @@
 #! /bin/bash -x
 
+function GitHub()
+{
+    # config name and email
+    git config --global user.name "elliot53"
+    git config --global user.email "1604244855@qq.com"
+
+    # check
+    echo "user.name: "
+    git config user.name
+    echo "user.email: "
+    git config user.email
+
+    ssh-keygen -t rsa -C "1604244855@qq.com"
+}
+
 # 模拟rtsp流
 function StartFFServer()
 {
