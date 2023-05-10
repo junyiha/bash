@@ -1,5 +1,92 @@
 #! /bin/bash
 
+function ClearMysql()
+{
+    sql="mysql -uroot -p123456"
+    $sql -e "use ManagerV3;" -e "show tables;"
+
+    echo "clear table: gh_t_camera_info"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_camera_info;"
+
+    echo "clear table: gh_t_face_db"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_face_db;"
+
+    echo "clear table: gh_t_face_image"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_face_image;"
+
+    echo "clear table: gh_t_face_info"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_face_info;"
+
+    echo "clear table: gh_t_func_conf"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_func_conf;"
+
+    echo "clear table: gh_t_journal"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_journal;"
+
+    echo "clear table: gh_t_record_json"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_record_json;"
+
+    echo "clear table: gh_t_task"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_task;"
+
+    echo "clear table: gh_t_warning_event"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_warning_event;"
+
+    echo "clear table: gh_t_warning_record"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_warning_record;"
+
+    echo "clear table: gh_t_gpu"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_gpu;"
+
+    echo "clear table: gh_t_server"
+    $sql -e "use ManagerV3;" -e "delete from gh_t_server;"
+}
+
+function CountMysql()
+{
+    sql="mysql -uroot -p123456"
+    $sql -e "use ManagerV3;" -e "show tables;"
+
+    echo "table: gh_t_algorithm"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_algorithm;"
+
+    echo "table: gh_t_camera_info"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_camera_info;"
+
+    echo "table: gh_t_face_db"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_face_db;"
+
+    echo "table: gh_t_face_image"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_face_image;"
+
+    echo "table: gh_t_face_info"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_face_info;"
+
+    echo "table: gh_t_func_conf"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_func_conf;"
+
+    echo "table: gh_t_journal"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_journal;"
+
+    echo "table: gh_t_record_json"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_record_json;"
+
+    echo "table: gh_t_task"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_task;"
+
+    echo "table: gh_t_warning_event"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_warning_event;"
+
+    echo "table: gh_t_warning_record"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_warning_record;"
+
+    echo "table: gh_t_gpu"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_gpu;"
+
+    echo "table: gh_t_server"
+    $sql -e "use ManagerV3;" -e "select count(*) from gh_t_server;"
+}
+
 function StartServer()
 {
     export LD_LIBRARY_PATH=/data/dagger/VideoProcess/lib:/data/dagger/VideoProcess/3party/lib:/system/lib:${LD_LIBRARY_PATH}
@@ -122,6 +209,8 @@ function StartDockerInNVIDIA()
         -p 13306:3306 \
         -p 17007:17007 \
         -p 10022:10022 \
+        -p 19999:19999 \
+        -p 20233:20233 \
         -v /etc/localtime:/etc/localtime:ro \
         -v /etc/timezone:/etc/timezone:ro \
         -e LOCAL_USER_ID=`id -u` \
@@ -187,6 +276,8 @@ function StartDockerVCA
         -p 15379:6379 \
         -p 13306:3306 \
         -p 17007:17007 \
+        -p 19999:19999 \
+        -p 20233:20233 \
         -v /system:/system \
         -v /etc/localtime:/etc/localtime:ro \
         -v /etc/timezone:/etc/timezone:ro \
@@ -293,11 +384,15 @@ function Help()
     echo "Usage: ./deploy.sh [-h]"
     echo "shell script for deploy vca project..."
     echo -e 
+    echo "  -h, --help  print help information"
     echo "  -c, --clear  clear redundant files"
     echo "  -m, --make-docker-image  './deploy.sh -m demo.tar.gz'make docker image which is used in docker import"
     echo "  -s, --start-docker  './deploy.sh -s face zhuoer:face_0322'create container from a docker image"
     echo "  -d, --delete-docker  './deploy.sh -d face zhuoer:face_0322': delete docker container and docker image"
-    echo "  --start-docker-in-nvidia  '.deploy.sh --start-docker-in-nvidia name nvidia/vca:v3.0'create a container in nvidia docker"
+    echo "  -sdin, --start-docker-in-nvidia  '.deploy.sh --start-docker-in-nvidia name nvidia/vca:v3.0'create a container in nvidia docker"
+    echo "  -int, --install-nvidia-toolkit  install nvidia toolkit for nvidia driver of encode media"
+    echo "  -clm, --clear-mysql  clear ManagerV3 database, delete all tables information"
+    echo "  -com, --count-mysql  count tables' data of ManagerV3 database"
 }
 
 function main()
@@ -314,12 +409,16 @@ function main()
         DeleteDocker $2 $3
     elif [[ $1 == "-vca" || $1 == "--vca-single-task" ]]; then 
         TestVCA
-    elif [[ $1 == "--start-docker-in-nvidia" ]]; then 
+    elif [[ $1 == "sdin" || $1 == "--start-docker-in-nvidia" ]]; then 
         StartDockerInNVIDIA $2 $3
     elif [[ $1 == "--test" ]]; then 
         TestCopy
-    elif [[ $1 == "--install-nvidia-toolkit" ]]; then 
+    elif [[ $1 == "int" || $1 == "--install-nvidia-toolkit" ]]; then 
         Install_NVIDIA_Toolkit
+    elif [[ $1 == "-clm" || $1 == "--clear-mysql" ]]; then 
+        ClearMysql
+    elif [[ $1 == "-com" || $1 == "--count-mysql" ]]; then 
+        CountMysql
     fi
 }
 
