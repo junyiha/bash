@@ -1,5 +1,6 @@
 #! /bin/bash
 
+# 清理mysql数据表
 function ClearMysql()
 {
     sql="mysql -uroot -p123456"
@@ -42,6 +43,7 @@ function ClearMysql()
     $sql -e "use ManagerV3;" -e "delete from gh_t_server;"
 }
 
+# 查询数据库各表的数据数量
 function CountMysql()
 {
     sql="mysql -uroot -p123456"
@@ -87,6 +89,7 @@ function CountMysql()
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_server;"
 }
 
+# docker启动mysql,nginx,redis,mqtt,supervisor服务
 function StartServer()
 {
     export LD_LIBRARY_PATH=/data/dagger/VideoProcess/lib:/data/dagger/VideoProcess/3party/lib:/system/lib:${LD_LIBRARY_PATH}
@@ -131,11 +134,13 @@ function StartServer()
     sleep 10000000000000000000000000
 }
 
+# 测试vca
 function TestVCA_2()
 {
     ./vca.exe --id 1 --detector-conf-inline --detector-conf @--detector-models@/data/dagger/static/Fire_NVIDIA_A500/DETECT.conf@xxx@yyy --input-video-name  rtsp://192.169.4.16/test_fire_smoke.mp4 --output-type 0
 }
 
+# 解压vca人脸分支的NVIDIA压缩包
 function ICE_VCA_TAR()
 {
     rm -r VideoProcess
@@ -146,6 +151,7 @@ function ICE_VCA_TAR()
     tar -zvxf VideoProcess-vca-5.1.4-ubuntu-18.04-x86_64-NVIDIA.tar.gz
 }
 
+# RK，英码智能盒子的docker启动命令
 function RK_Docker()
 {
     # failed 
@@ -158,12 +164,14 @@ function RK_Docker()
     docker run -it -d --privileged=true -v /userdata/:/userdata/ -v /dev/media0:/dev/media0 -v /dev/galcore:/dev/galcore -v /usr/:/rk_usr --device=/dev/galcore -p 10022:22 -p 10008:10008  --name rk ubuntu18/rk:v1
 }
 
+# RK，英码测试命令
 function RK_Test()
 {
     # 文件解码测试，仅支持JPEG，H264，H265
     rkmedia_vdec_test -w 1280 -h 720 -i ./highway.mp4  -f 1 -t H264
 }
 
+# 拷贝NVIDIA硬件编解码动态库到docker中
 function TestCopy()
 {
     tmp_dir="/tmp/nvidia-encode-library"
@@ -183,6 +191,7 @@ function TestCopy()
     echo ${libnvcuvid}
 }
 
+# 安装NVIDIA 的docker工具组件，用于在docker中使用英伟达的硬件资源（显卡）
 function Install_NVIDIA_Toolkit()
 {
     apt install -y curl
@@ -193,6 +202,7 @@ function Install_NVIDIA_Toolkit()
     systemctl restart docker
 }
 
+# 在NVIDIA硬件平台启动docker
 function StartDockerInNVIDIA()
 {
     # docker run -itd --gpus all --privileged=true --restart=always --name $1 $2 /bin/bash
@@ -246,6 +256,7 @@ function StartDockerInNVIDIA()
     docker exec -it $1 /bin/bash -c "ln -s /usr/lib/x86_64-linux-gnu/libnvidia-encode.so.1 /usr/lib/x86_64-linux-gnu/libnvidia-encode.so"
 }
 
+# 测试VCA命令
 function TestVCA()
 {
     model="/data/dagger/static/models/Fire_BITMAINLAND/DETECT.conf"
@@ -306,6 +317,7 @@ function DeleteDocker()
     fi
 }
 
+# 清理VCA冗余文件，包括日志文件，敏感文件等
 function Clear()
 {
     echo "clear redundant files..."
@@ -370,6 +382,7 @@ function Clear()
     fi
 }
 
+# 在容器中，通过tar打包文件，制作镜像，通过docker import导入该镜像文件
 function MakeDockerImportImage()
 {
     if [[ -z $1 ]]; then 
@@ -379,6 +392,7 @@ function MakeDockerImportImage()
     fi
 }
 
+# 输出帮助信息
 function Help()
 {
     echo "Usage: ./deploy.sh [-h]"
@@ -395,6 +409,7 @@ function Help()
     echo "  -com, --count-mysql  count tables' data of ManagerV3 database"
 }
 
+# 主函数，接收和解析输入参数
 function main()
 {
     if [[ $1 == "-c" || $1 == "--clear" ]]; then 
