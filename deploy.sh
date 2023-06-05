@@ -1,45 +1,145 @@
 #! /bin/bash
 
+function Decompression()
+{
+    cd $1
+    echo "the workspace is : "
+    echo `pwd`
+    read -p "going on ? yes[y] | no[n] >>> " opt
+    if [[ $opt == "y" || $opt == "yes" ]]; then 
+        files=$(ls ./)
+        for file in ${files}
+        do 
+            echo -e
+            echo "decompress the file :${file}"
+            read -p "going on ? yes[y] | no[n] >>> " option
+            if [[ $option == "y" || $option == "yes" ]]; then 
+                tar -zxf ${file}
+            elif [[ $option == "n" || $option == "no" ]]; then 
+                echo "next file..."
+                continue 
+            else 
+                echo "wrong input"
+                break
+            fi
+        done
+    elif [[ $opt == "n" || $opt == "no" ]]; then 
+        echo "no"
+        exit
+    else 
+        echo "wrong input"
+        echo "exit"
+        exit
+    fi
+}
+
+function KillControl()
+{
+    echo -e
+    echo "step 1: supervisorctl stop control..."
+    supervisorctl stop control
+
+    echo -e
+    echo "step 2: killall -s 9 vca.exe ..."
+    killall -s 9 vca.exe 
+
+    echo -e
+    echo "step 3: killall -s 9 ice.exe..."
+    killall -s 9 ice.exe
+
+    echo -e
+    echo "step 4: killall -s 9 python38..."
+    killall -s 9 python38
+}
+
+function CheckControl()
+{
+
+    echo -e
+    echo "step 1: ps -eaf | grep ice.exe..."
+    ps -eaf | grep ice.exe
+
+    echo -e
+    echo "step 2: ps -eaf | grep vca.exe..."
+    ps -eaf | grep vca.exe
+
+    echo -e
+    echo "step 3: ps -eaf | grep python38..."
+    ps -eaf | grep python38
+}
+
+function KillManager()
+{
+
+    echo -e
+    echo "step 1: supervisorctl stop manager ..."
+    supervisorctl stop manager 
+}
+
+function CheckManager()
+{
+
+    echo -e
+    echo "step 1: ps -eaf | grep uwsgi..."
+    ps -eaf | grep uwsgi
+
+    echo -e 
+    echo "step 2: ps -eaf | grep kms.exe..."
+    ps -eaf | grep kms.exe...
+}
+
 # 清理mysql数据表
 function ClearMysql()
 {
     sql="mysql -uroot -p123456"
     $sql -e "use ManagerV3;" -e "show tables;"
 
-    echo "clear table: gh_t_camera_info"
+    echo -e
+    echo "step 1: clear table: gh_t_camera_info"
     $sql -e "use ManagerV3;" -e "delete from gh_t_camera_info;"
 
-    echo "clear table: gh_t_face_db"
+    echo -e
+    echo "step 2: clear table: gh_t_face_db"
     $sql -e "use ManagerV3;" -e "delete from gh_t_face_db;"
 
-    echo "clear table: gh_t_face_image"
+    echo -e
+    echo "step 3: clear table: gh_t_face_image"
     $sql -e "use ManagerV3;" -e "delete from gh_t_face_image;"
 
-    echo "clear table: gh_t_face_info"
+    echo -e
+    echo "step 4: clear table: gh_t_face_info"
     $sql -e "use ManagerV3;" -e "delete from gh_t_face_info;"
 
-    echo "clear table: gh_t_func_conf"
+    echo -e
+    echo "step 5: clear table: gh_t_func_conf"
     $sql -e "use ManagerV3;" -e "delete from gh_t_func_conf;"
 
-    echo "clear table: gh_t_journal"
+    echo -e
+    echo "step 6: clear table: gh_t_journal"
     $sql -e "use ManagerV3;" -e "delete from gh_t_journal;"
 
-    echo "clear table: gh_t_record_json"
+    echo -e
+    echo "step 7: clear table: gh_t_record_json"
     $sql -e "use ManagerV3;" -e "delete from gh_t_record_json;"
 
-    echo "clear table: gh_t_task"
+    echo -e
+    echo "step 8: clear table: gh_t_task"
     $sql -e "use ManagerV3;" -e "delete from gh_t_task;"
 
-    echo "clear table: gh_t_warning_event"
+    echo -e
+    echo "step 9: clear table: gh_t_warning_event"
     $sql -e "use ManagerV3;" -e "delete from gh_t_warning_event;"
 
-    echo "clear table: gh_t_warning_record"
+    echo -e
+    echo "step 10: clear table: gh_t_warning_record"
     $sql -e "use ManagerV3;" -e "delete from gh_t_warning_record;"
 
-    echo "clear table: gh_t_gpu"
+    echo -e
+    echo "step 11: clear table: gh_t_gpu"
     $sql -e "use ManagerV3;" -e "delete from gh_t_gpu;"
 
-    echo "clear table: gh_t_server"
+    echo -e
+    echo "step 12: clear table: gh_t_server"
     $sql -e "use ManagerV3;" -e "delete from gh_t_server;"
 }
 
@@ -49,43 +149,56 @@ function CountMysql()
     sql="mysql -uroot -p123456"
     $sql -e "use ManagerV3;" -e "show tables;"
 
-    echo "table: gh_t_algorithm"
+    echo -e
+    echo "step 1: table: gh_t_algorithm"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_algorithm;"
 
-    echo "table: gh_t_camera_info"
+    echo -e
+    echo "step 2: table: gh_t_camera_info"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_camera_info;"
 
-    echo "table: gh_t_face_db"
+    echo -e
+    echo "step 3: table: gh_t_face_db"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_face_db;"
 
-    echo "table: gh_t_face_image"
+    echo -e
+    echo "step 4: table: gh_t_face_image"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_face_image;"
 
-    echo "table: gh_t_face_info"
+    echo -e
+    echo "step 5: table: gh_t_face_info"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_face_info;"
 
-    echo "table: gh_t_func_conf"
+    echo -e
+    echo "step 6: table: gh_t_func_conf"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_func_conf;"
 
-    echo "table: gh_t_journal"
+    echo -e
+    echo "step 7: table: gh_t_journal"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_journal;"
 
-    echo "table: gh_t_record_json"
+    echo -e
+    echo "step 8: table: gh_t_record_json"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_record_json;"
 
-    echo "table: gh_t_task"
+    echo -e
+    echo "step 9: table: gh_t_task"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_task;"
 
-    echo "table: gh_t_warning_event"
+    echo -e
+    echo "step 10: table: gh_t_warning_event"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_warning_event;"
 
-    echo "table: gh_t_warning_record"
+    echo -e
+    echo "step 11: table: gh_t_warning_record"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_warning_record;"
 
-    echo "table: gh_t_gpu"
+    echo -e
+    echo "step 12: table: gh_t_gpu"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_gpu;"
 
-    echo "table: gh_t_server"
+    echo -e
+    echo "step 13: table: gh_t_server"
     $sql -e "use ManagerV3;" -e "select count(*) from gh_t_server;"
 }
 
@@ -131,6 +244,9 @@ function StartServer()
     # check 
     supervisorctl status
 
+    # sshd
+    /etc/init.d/ssh start
+
     sleep 10000000000000000000000000
 }
 
@@ -141,7 +257,7 @@ function TestVCA_2()
 }
 
 # 解压vca人脸分支的NVIDIA压缩包
-function ICE_VCA_TAR()
+function ICE_VCA_TAR_NVIDIA()
 {
     rm -r VideoProcess
     tar -zvxf VideoProcess-5.1.4-ubuntu-18.04-x86_64-NVIDIA.tar.gz
@@ -149,6 +265,24 @@ function ICE_VCA_TAR()
     tar -zvxf VideoProcess-ice-5.1.4-ubuntu-18.04-x86_64-NVIDIA.tar.gz
     tar -zvxf VideoProcess-kms-5.1.4-ubuntu-18.04-x86_64-NVIDIA.tar.gz
     tar -zvxf VideoProcess-vca-5.1.4-ubuntu-18.04-x86_64-NVIDIA.tar.gz
+}
+
+# 解压vca人脸分支的BITMAINLAND压缩包
+function ICE_VCA_TAR_BITMAINLAND()
+{
+    cd /home/user/workspace/video_process/package
+
+    rm -r VideoProcess
+
+    tar -zxvf VideoProcess-5.1.4-ubuntu-18.04-aarch64-BITMAINLAND.tar.gz        
+    tar -zxvf VideoProcess-kms-5.1.4-ubuntu-18.04-aarch64-BITMAINLAND.tar.gz
+    tar -zxvf VideoProcess-devel-5.1.4-ubuntu-18.04-aarch64-BITMAINLAND.tar.gz  
+    tar -zxvf VideoProcess-ice-5.1.4-ubuntu-18.04-aarch64-BITMAINLAND.tar.gz    
+    tar -zxvf VideoProcess-vca-5.1.4-ubuntu-18.04-aarch64-BITMAINLAND.tar.gz
+    
+    cd VideoProcess/3party/lib/
+    mv libcrypto.so.1.1 libcrypto.so.1.1.backup
+    mv libssl.so.1.1  libssl.so.1.1.backup
 }
 
 # RK，英码智能盒子的docker启动命令
@@ -403,10 +537,16 @@ function Help()
     echo "  -m, --make-docker-image  './deploy.sh -m demo.tar.gz'make docker image which is used in docker import"
     echo "  -s, --start-docker  './deploy.sh -s face zhuoer:face_0322'create container from a docker image"
     echo "  -d, --delete-docker  './deploy.sh -d face zhuoer:face_0322': delete docker container and docker image"
+    echo "  -kc, --kill-control   kill computing_node process, vca.exe, ice.exe"
+    echo "  -cc, --check-control  check the process of computing_node"
+    echo "  -km, --kill-manager  kill manager_node process, kms.exe"
+    echo "  -cm, --check-manager  check the process of manager_node"
     echo "  -sdin, --start-docker-in-nvidia  '.deploy.sh --start-docker-in-nvidia name nvidia/vca:v3.0'create a container in nvidia docker"
     echo "  -int, --install-nvidia-toolkit  install nvidia toolkit for nvidia driver of encode media"
     echo "  -clm, --clear-mysql  clear ManagerV3 database, delete all tables information"
     echo "  -com, --count-mysql  count tables' data of ManagerV3 database"
+    echo "  -tib, --tar-ice-bitmainland  decompression ice file which is on bitmainland"
+    echo "  -tin, --tar-ice-nvidia  decompression ice file which is on nvidia"
 }
 
 # 主函数，接收和解析输入参数
@@ -434,6 +574,18 @@ function main()
         ClearMysql
     elif [[ $1 == "-com" || $1 == "--count-mysql" ]]; then 
         CountMysql
+    elif [[ $1 == "-kc" || $1 == "--kill-control" ]]; then 
+        KillControl
+    elif [[ $1 == "-cc" || $1 == "--check-control" ]]; then 
+        CheckControl
+    elif [[ $1 == "-km" || $1 == "--kill-manager" ]]; then 
+        KillManager
+    elif [[ $1 == "-cm" || $1 == "--check-manager" ]]; then 
+        CheckManager
+    elif [[ $1 == "-tib" || $1 == "--tar-ice-bitmainland" ]]; then 
+        ICE_VCA_TAR_BITMAINLAND
+    elif [[ $1 == "-tin" || $1 == "--tar-ice-nvidia" ]]; then 
+        ICE_VCA_TAR_NVIDIA
     fi
 }
 

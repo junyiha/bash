@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash 
 
 function Recompile()
 {
@@ -6,7 +6,7 @@ function Recompile()
     cd build
     echo "----compile project---"
     cmake .. 
-    make -j9
+    make -j4
     echo "----Out build folder----"
     cd ..
 }

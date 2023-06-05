@@ -86,6 +86,7 @@ function FindBashFile()
     done 
 }
 
+# 将后缀名为sh的文件，重命名为.c
 function FindBashFile_V2()
 {
     for file in $(ls ./)
