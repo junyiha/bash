@@ -1,14 +1,26 @@
 #! /bin/bash
 
+# rk_1126 平台启动vca服务和mnc服务
 function StartRKProject()
 {
-    mnc="/userdata/edge/manager_node_cpp/mnc.exe"
     vca="/userdata/edge/VideoProcess/bin/vca.exe"
+    mnc="/userdata/edge/manager_node_cpp/mnc.exe"
 
-    eval "nohup ${vca} &"
-    sleep 1
+    if [[ -e ${vca} ]]; then 
+        eval "nohup ${vca} > /dev/null 2>&1 &"
+        sleep 10
+    else
+        echo "[Error] the file: ${vca} not exist"
+        exit -1
+    fi 
 
-    eval "nohup ${mnc} --port=10008 --ip=0.0.0.0 &"
+    if [[ -e ${vca} ]]; then 
+        eval "nohup ${mnc}  > /dev/null 2>&1  &"
+    else 
+        echo "[Error] the file: ${mnc} not exist"
+        eval "pkill ${vca}"
+        exit -1
+    fi
 }
 
 function Decompression()
