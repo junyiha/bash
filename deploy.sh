@@ -1,5 +1,16 @@
 #! /bin/bash
 
+function StartRKProject()
+{
+    mnc="/userdata/edge/manager_node_cpp/mnc.exe"
+    vca="/userdata/edge/VideoProcess/bin/vca.exe"
+
+    eval "nohup ${vca} &"
+    sleep 1
+
+    eval "nohup ${mnc} --port=10008 --ip=0.0.0.0 &"
+}
+
 function Decompression()
 {
     cd $1
@@ -295,7 +306,10 @@ function RK_Docker()
     # 企业微信邮箱回复  apt不能使用，大概是由于/usr/lib覆盖掉了docker里的/usr/lib，apt找不到原本的动态库
     # docker run -it -d --privileged=true -v /userdata/:/userdata/ -v /dev/media0:/dev/media0 -v /dev/galcore:/dev/galcore -v /usr/lib:/usr/lib -v /usr/bin:/rk_usr/bin --device=/dev/galcore --name ubuntu_2 ubuntu:18.04
     # 增加了端口映射
-    docker run -it -d --privileged=true -v /userdata/:/userdata/ -v /dev/media0:/dev/media0 -v /dev/galcore:/dev/galcore -v /usr/:/rk_usr --device=/dev/galcore -p 10022:22 -p 10008:10008  --name rk ubuntu18/rk:v1
+    docker run -it -d --privileged=true -v /userdata/:/userdata/ -v /dev/media0:/dev/media0/ -v /dev/galcore:/dev/galcore -v /usr/:/rk_usr/ --device=/dev/galcore  -p 8000:8000 -p 8001:8001 -p 10022:10022 -p 10008:10008 -p 10009:10009 -p 10010:10010 -p 10011:10011 -p 10012:10012 -p 10013:10013  ubuntu/20.04:0621
+
+    # 增加自启动脚本
+    docker run -it -d --privileged=true -v /userdata/:/userdata/ -v /dev/media0:/dev/media0 -v /dev/galcore:/dev/galcore -v /usr/:/rk_usr --device=/dev/galcore -p 10022:22 -p 10008:10008  --name rk ubuntu18/rk:v1 /bin/bash /etc/init.d/auto-mnc.sh
 }
 
 # RK，英码测试命令
