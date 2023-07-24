@@ -1,5 +1,30 @@
 #! /bin/bash -x
 
+# 获取指定后缀名文件并解压
+function UnCompressFile()
+{
+    file_arr=($(find . -name "*.tar.gz"))
+
+    for file in "${file_arr[@]}"; 
+    do 
+        echo ${file}
+        tar -zxf ${file}
+    done
+}
+
+function Record()
+{
+    while true
+    do 
+        # gh_2023-07-19_10-25-53.mp4
+        current_time=$(date +"%Y-%m-%d_%H-%M-%S") 
+        output_file="gh_${current_time}.mp4"
+        echo ${output_file}
+        # ffmpeg -rtsp_transport tcp -i rtsp://admin:HuaWei123@192.168.1.4/LiveMedia/chi/Media1 -t 12:00:00 -c:v copy -an "${output_file}"
+        sleep 5
+    done
+}
+
 function GitHub()
 {
     # config name and email
@@ -72,6 +97,8 @@ function main()
         Help
     elif [[ $1 == "-w" || $1 == "--watch-memory" ]]; then 
         WatchMemory
+    elif [[ $1 == "--record" ]]; then 
+        Record
     fi
 }
 
